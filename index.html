@@ -475,10 +475,13 @@
 
   .rule-sub{
     font-family:'Inter',sans-serif !important;
-    max-width:760px;
+    display:block;
+    width:100%;
+    max-width:none;
     font-size:14px;
     line-height:1.65;
     margin:15px 0 28px;
+    white-space:nowrap;
   }
 
   /* Theme button */
@@ -643,15 +646,29 @@
 
   /* Year selector */
   .year-toggle{
-    gap:8px;
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:10px;
     margin-bottom:14px;
   }
 
   .year-toggle button{
+    width:100%;
+    min-width:0;
+    grid-column:auto !important;
+    justify-self:stretch !important;
     border-radius:10px;
     padding:12px 14px;
     font-size:13px;
     font-weight:700;
+  }
+
+  /* Keep all three year buttons perfectly symmetrical.
+     This intentionally overrides the original third-button rule. */
+  .year-toggle button:nth-child(3){
+    width:100% !important;
+    grid-column:auto !important;
+    justify-self:stretch !important;
   }
 
   /* Filters/search */
@@ -942,6 +959,27 @@
     .rank-banner{align-items:flex-start;}
   }
 
+  /* Final layout refinements: keep text on one line when space allows. */
+  .masthead-left h1{
+    letter-spacing:-.025em;
+  }
+
+  .rule-sub,
+  .section-desc{
+    max-width:none;
+  }
+
+  @media (max-width:760px){
+    .rule-sub{
+      white-space:normal;
+    }
+  }
+
+  @media (max-width:640px){
+    .year-toggle{
+      grid-template-columns:1fr;
+    }
+  }
 </style>
 </head>
 <body>
@@ -967,11 +1005,11 @@
       <p class="section-desc">Teorik dersler ortalamanızın %40'ı ile uygulamalı dersler ortalamanızın %60'ı toplanarak <b>atamaya esas puanınız</b> hesaplanır. Bu puan girildiği anda, o ana kadar sisteme giren herkesle karşılaştırılır ve size sıralamanızı gösteririz. Rumuz isteğe bağlıdır; sonuç tablosunda gerçek adınız yerine bunu kullanabilirsiniz.</p>
       <div class="field-row">
         <div>
-          <label class="field-label">Teorik Dersler Ortalaması (%40)</label>
+          <label class="field-label">Teorik Dersler Ortalaması</label>
           <input type="number" id="theoreticalInput" placeholder="örn. 78.500" step="0.001" min="60" max="100">
         </div>
         <div>
-          <label class="field-label">Uygulamalı Dersler Ortalaması (%60)</label>
+          <label class="field-label">Uygulamalı Dersler Ortalaması</label>
           <input type="number" id="practicalInput" placeholder="örn. 86.250" step="0.001" min="70" max="100">
         </div>
       </div>
@@ -981,8 +1019,6 @@
           <input type="text" id="nameInput" placeholder="örn. GaziEgitim-1" maxlength="30">
         </div>
       </div>
-      <div style="font-size:12px;color:var(--ink-soft);font-family:'IBM Plex Mono',monospace;margin:-8px 0 4px;">Atamaya Esas Puan = (Teorik Ortalama × %40) + (Uygulamalı Ortalama × %60)</div>
-      <div style="font-size:12px;color:var(--ink-soft);font-family:'IBM Plex Mono',monospace;margin:0 0 16px;">Teorik ortalama en az 60, uygulamalı ortalama en az 70 olmalıdır.</div>
       <div class="score-preview">
         <div>
           <div class="score-preview-label">Atamaya Esas Puanınız</div>
