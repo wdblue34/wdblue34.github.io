@@ -17,10 +17,10 @@
     --ink:#1B1A3B;
     --text:#1B1A3B;
     --ink-soft:#57547E;
-    --seal:#0D9488;
-    --seal-dark:#0B7A70;
-    --accent-blue:#2563EB;
-    --green:#15803D;
+    --seal:#158A5A;
+    --seal-dark:#0F6B45;
+    --accent-blue:#28679A;
+    --green:#2A8B5F;
     --line: rgba(27,26,59,0.13);
     --shadow: 0 1px 0 rgba(27,26,59,0.06);
     color-scheme: light;
@@ -32,28 +32,41 @@
     --ink:#3A3A3A;
     --text:#ECECEC;
     --ink-soft:#9E9E9E;
-    --seal:#2DD4BF;
-    --seal-dark:#14B8A6;
-    --accent-blue:#60A5FA;
-    --green:#4ADE80;
+    --seal:#4C6FE0;
+    --seal-dark:#3D5AC4;
+    --accent-blue:#5B8DEF;
+    --green:#2A8B5F;
     --line: rgba(255,255,255,0.10);
     --shadow: 0 1px 0 rgba(0,0,0,0.4);
     color-scheme: dark;
   }
+  /* Dark mode: keep placement-result green fixed; make primary action buttons blue. */
+  html[data-theme="dark"] .result-table caption{background:#15803D !important;color:#fff;}
+  html[data-theme="dark"] .btn.seal-btn{background:#4C6FE0;border-color:#4C6FE0;color:#fff;}
+  html[data-theme="dark"] .btn.seal-btn:hover{background:#3D5AC4;border-color:#3D5AC4;}
+
   html[data-theme="dark"] .map-legend i.off{background:#3A3A3A;}
   html[data-theme="dark"] .tr-map-svg-wrap path.il-disabled{fill:#3A3A3A;}
-  html[data-theme="dark"] .tr-map-svg-wrap path.il-active{fill:#3E5C96;}
-  html[data-theme="dark"] .tr-map-svg-wrap path.il-active:hover{fill:#4E78C4;}
+  html[data-theme="dark"] .tr-map-svg-wrap path.il-active{fill:#4B76A8;}
+  html[data-theme="dark"] .tr-map-svg-wrap path.il-active:hover{fill:#5C8CC2;}
   html[data-theme="dark"] .modal-overlay{background:rgba(0,0,0,0.65);}
   html[data-theme="dark"] .btn:hover{background:#2C2C2C;}
-  html[data-theme="dark"] body{
-    background:
-      radial-gradient(ellipse at top left, rgba(255,255,255,0.03), transparent 45%),
-      radial-gradient(ellipse at bottom right, rgba(45,212,191,0.05), transparent 50%),
-      var(--paper);
-  }
-  html[data-theme="dark"] table.results tr.me{background:rgba(96,165,250,0.14);}
+  html[data-theme="dark"] body{background:var(--paper);}
+  html[data-theme="dark"] table.results tr.me{background:rgba(91,141,239,0.16);}
+  /* Dark mode result card: preserve --green exactly; only fix surrounding contrast. */
+  html[data-theme="dark"] .result-table td.rlabel{background:#2A2A2A;color:var(--text);}
+  html[data-theme="dark"] .result-table td.rvalue{background:var(--surface);color:var(--green);}
+  html[data-theme="dark"] .result-table.unplaced td.rvalue{color:var(--ink-soft);}
+  html[data-theme="dark"] .result-table caption{color:#fff;}
+  html[data-theme="dark"] .result-table{border-color:var(--line);}
+
   html[data-theme="dark"] .modal-box{box-shadow:0 20px 60px -12px rgba(0,0,0,0.6);}
+  html[data-theme="dark"] .result-table{background:var(--surface);border-color:rgba(255,255,255,0.14);}
+  html[data-theme="dark"] .result-table td{border-top-color:rgba(255,255,255,0.10);}
+  html[data-theme="dark"] .result-table td.rlabel{background:#292929;color:#F3F3F3;}
+  html[data-theme="dark"] .result-table td.rvalue{background:#202020;color:#5EEAD4;}
+  html[data-theme="dark"] .result-table.unplaced td.rvalue{color:#B5B5B5;}
+  html[data-theme="dark"] .result-table.unplaced caption{background:#525252;color:#FFFFFF;}
   html[data-theme="dark"] .theme-toggle-btn .icon-moon{display:none;}
   html:not([data-theme="dark"]) .theme-toggle-btn .icon-sun{display:none;}
 
@@ -79,11 +92,7 @@
     min-height:100vh;
     display:flex;
     flex-direction:column;
-    background:
-      radial-gradient(ellipse at top left, rgba(124,58,237,0.08), transparent 45%),
-      radial-gradient(ellipse at bottom right, rgba(13,148,136,0.06), transparent 50%),
-      var(--paper);
-    color:var(--text);
+    background:var(--paper);color:var(--text);
     font-family:'Inter',sans-serif;
     -webkit-font-smoothing:antialiased;
     transition:background .2s ease,color .2s ease;
@@ -119,23 +128,36 @@
     font-family:'IBM Plex Mono',monospace;
   }
 
-  /* stepper */
-  .stepper{display:flex;gap:0;margin-bottom:28px;border:1px solid var(--line);border-radius:2px;overflow:hidden;}
-  .step-tab{
-    flex:1;padding:12px 14px;background:var(--paper);cursor:pointer;
-    border-right:1px solid var(--line);position:relative;
-    transition:background .15s ease;
+  /* stepper — connected timeline of numbered nodes */
+  .stepper{display:flex;align-items:flex-start;gap:0;margin-bottom:32px;}
+  .step-node{
+    flex:1;position:relative;display:flex;flex-direction:column;align-items:center;
+    cursor:pointer;padding-top:2px;
   }
-  .step-tab:last-child{border-right:none;}
-  .step-tab .num{
-    font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-soft);
+  .step-node:not(:first-child)::before{
+    content:'';position:absolute;top:19px;right:50%;width:100%;height:2px;
+    background:var(--line);z-index:0;transition:background .25s ease;
   }
-  .step-tab .label{font-size:13px;font-weight:600;margin-top:2px;}
-  .step-tab.active{background:var(--ink);}
-  .step-tab.active .num{color:rgba(255,255,255,.55);}
-  .step-tab.active .label{color:#fff;}
-  .step-tab.done .num{color:var(--green);}
-  .step-tab.locked{opacity:.45;cursor:not-allowed;}
+  .step-node.done:not(:first-child)::before,
+  .step-node.active:not(:first-child)::before{background:var(--seal);}
+  .step-circle{
+    width:38px;height:38px;border-radius:50%;position:relative;z-index:1;
+    background:var(--surface);border:2px solid var(--line);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:700;color:var(--ink-soft);
+    transition:background .2s ease,border-color .2s ease,color .2s ease,transform .15s ease;
+  }
+  .step-node:hover .step-circle{transform:scale(1.06);}
+  .step-node.active .step-circle{background:var(--ink);border-color:var(--ink);color:#fff;}
+  .step-node.done .step-circle{background:var(--seal);border-color:var(--seal);color:#fff;}
+  .step-circle .step-check{display:none;font-size:16px;line-height:1;}
+  .step-node.done .step-circle .step-num{display:none;}
+  .step-node.done .step-circle .step-check{display:block;}
+  .step-label{margin-top:9px;font-size:12.5px;font-weight:600;color:var(--text);text-align:center;letter-spacing:.01em;}
+  .step-node.active .step-label{color:var(--ink);font-weight:700;}
+  .step-node.locked{cursor:not-allowed;}
+  .step-node.locked .step-circle{opacity:.5;}
+  .step-node.locked .step-label{color:var(--ink-soft);opacity:.75;}
 
   .panel{display:none;}
   .panel.active{display:block;animation:fadeUp .35s ease both;}
@@ -239,11 +261,18 @@
   .tr-map-svg-wrap{position:relative;width:100%;max-width:620px;margin:0 auto;}
   .tr-map-svg-wrap svg{width:100%;height:auto;display:block;}
   .tr-map-svg-wrap path{stroke:#fff;stroke-width:1.1;transition:fill .12s ease,opacity .12s ease;}
-  .tr-map-svg-wrap path.il-active{fill:#93b7f5;cursor:pointer;}
-  .tr-map-svg-wrap path.il-active:hover{fill:var(--accent-blue);}
-  .tr-map-svg-wrap path.il-selected{fill:var(--seal)!important;}
+  .tr-map-svg-wrap path.il-active{fill:#5B8DBF;cursor:pointer;}
+  .tr-map-svg-wrap path.il-active:hover{fill:#3E6E9E;}
+  .tr-map-svg-wrap path.il-selected{fill:var(--map-selected)!important;}
   .tr-map-svg-wrap path.il-disabled{fill:#c7c9d9;cursor:not-allowed;}
   .map-hint{font-size:11.5px;color:var(--ink-soft);text-align:center;margin-top:8px;font-family:'IBM Plex Mono',monospace;}
+  /* Map province quota tooltip */
+  .map-il-tooltip .map-tooltip-quota{
+    display:block;margin-top:2px;font-size:10.5px;font-weight:600;opacity:.78;
+  }
+  .map-il-tooltip.has-quota{padding:7px 10px;line-height:1.25;}
+  html[data-theme="dark"] .map-il-tooltip .map-tooltip-quota{opacity:.86;}
+
   .map-il-tooltip{
     position:absolute;pointer-events:none;z-index:50;background:var(--ink);color:#fff;
     font-family:'Inter',sans-serif;font-size:12px;font-weight:600;padding:5px 9px;border-radius:2px;
@@ -355,7 +384,29 @@
     background:var(--paper-dim);border:1px solid var(--line);border-radius:2px;padding:10px 12px;
   }
   .modal-actions{display:flex;justify-content:flex-end;gap:10px;}
+  .archive-link-btn{
+    display:inline-flex;align-items:center;gap:6px;
+    background:none;border:1px solid var(--line);border-radius:999px;
+    padding:7px 14px;margin:2px 0 22px;font-family:'Inter',sans-serif;
+    font-size:12.5px;font-weight:600;color:var(--ink-soft);cursor:pointer;
+    transition:background .15s ease,color .15s ease,border-color .15s ease;
+  }
+  .archive-link-btn:hover{background:var(--paper-dim);color:var(--text);border-color:var(--text);}
+
+  .archive-box{
+    max-width:1100px;width:min(1100px,96vw);height:min(92vh,900px);max-height:92vh;
+    display:flex;flex-direction:column;overflow:hidden;
+  }
+  .archive-box-head{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+  .archive-year-info{
+    font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);
+    margin:6px 0 14px;
+  }
+  .archive-body{flex:1;min-height:0;overflow-y:auto;padding-right:2px;}
+  .archive-list{margin-top:10px;}
+  .archive-row{cursor:default;}
   .row-between{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-top:20px;margin-bottom:28px;}
+
   .hint{font-size:12px;color:var(--ink-soft);}
   .result-table{width:100%;border-collapse:collapse;border:1px solid var(--line);border-radius:2px;overflow:hidden;margin-top:6px;table-layout:fixed;}
   .result-table caption{
@@ -369,6 +420,12 @@
   .result-table.unplaced td.rvalue{color:var(--ink-soft);}
   @media (max-width:640px){
     .result-table td.rlabel{width:110px;}
+    .archive-box{
+      width:96vw;
+      height:94vh;
+      max-height:94vh;
+      padding:20px 16px;
+    }
   }
 
   /* rank banner */
@@ -434,12 +491,7 @@
     font-family:'Inter',sans-serif !important;
   }
 
-  body{
-    background:
-      radial-gradient(ellipse at 0% 0%, rgba(124,58,237,0.08), transparent 38%),
-      radial-gradient(ellipse at 100% 100%, rgba(13,148,136,0.06), transparent 42%),
-      var(--paper);
-    font-size:15px;
+  body{background:var(--paper);font-size:15px;
     line-height:1.5;
   }
 
@@ -493,46 +545,10 @@
     backdrop-filter:blur(10px);
   }
 
-  /* Stepper */
-  .stepper{
-    border:0;
-    border-radius:16px;
-    overflow:hidden;
-    margin-bottom:24px;
-    background:var(--surface);
-    box-shadow:var(--ui-shadow);
-    padding:5px;
-    gap:5px;
-  }
-
-  .step-tab{
-    border:0;
-    border-radius:11px;
-    padding:13px 16px;
-    background:transparent;
-  }
-
-  .step-tab .num{
-    font-family:'Inter',sans-serif !important;
-    font-size:10px;
-    font-weight:700;
-    letter-spacing:.06em;
-  }
-
-  .step-tab .label{
-    font-size:13px;
-    font-weight:700;
-    margin-top:3px;
-  }
-
-  .step-tab.active{
-    background:var(--ink);
-    box-shadow:0 5px 14px rgba(27,26,59,.16);
-  }
-
-  .step-tab.done{
-    background:var(--paper);
-  }
+  /* Stepper (timeline) — font/weight tie-in with the Inter override above */
+  .stepper{margin-bottom:26px;}
+  .step-circle{font-family:'Inter',sans-serif !important;font-size:12px;}
+  .step-label{font-family:'Inter',sans-serif !important;font-size:12.5px;font-weight:700;}
 
   /* Cards */
   .card{
@@ -938,9 +954,10 @@
     .masthead{align-items:flex-start;padding-right:48px;}
     .masthead-right{text-align:left;}
     .card{padding:22px 18px;border-radius:13px;}
-    .stepper{border-radius:13px;}
-    .step-tab{padding:11px 8px;}
-    .step-tab .label{font-size:12px;}
+    .stepper{margin-bottom:24px;}
+    .step-circle{width:33px;height:33px;font-size:12px;}
+    .step-node:not(:first-child)::before{top:16.5px;}
+    .step-label{font-size:11.5px;margin-top:7px;}
     .tr-map-svg-wrap svg{min-height:0;}
   }
 
@@ -950,10 +967,10 @@
     .rule-sub{font-size:13px;}
     .theme-toggle-btn{top:13px;right:13px;width:40px;height:40px;}
     .card{padding:19px 15px;}
-    .stepper{padding:4px;gap:3px;}
-    .step-tab{padding:10px 6px;}
-    .step-tab .num{font-size:9px;}
-    .step-tab .label{font-size:11px;}
+    .stepper{gap:0;}
+    .step-circle{width:28px;height:28px;font-size:11px;}
+    .step-node:not(:first-child)::before{top:14px;}
+    .step-label{font-size:10px;margin-top:6px;letter-spacing:0;}
     .score-preview{align-items:flex-start;flex-direction:column;}
     .score-preview-value{font-size:28px;}
     .rank-banner{align-items:flex-start;}
@@ -980,6 +997,44 @@
       grid-template-columns:1fr;
     }
   }
+
+/* Final dark-mode corrections */
+html[data-theme="dark"]{--seal:#4C6FE0;--seal-dark:#3D5AC4;}
+html[data-theme="dark"] .result-table td.rvalue{color:#15803D !important;}
+html[data-theme="dark"] .result-table.unplaced td.rvalue{color:var(--ink-soft) !important;}
+html[data-theme="dark"] .placed{color:#15803D !important;}
+html[data-theme="dark"] .placed-city{color:var(--ink-soft) !important;}
+/* remove selected-city toast/badge */
+.map-selection-toast,.selected-city-toast,.il-selected-toast,.map-selected-city{display:none!important;}
+/* Hide any dynamically rendered selected-province status box/message. */
+[id*="selectedCity"], [id*="selected-city"], [class*="selected-city"], [class*="selectedCity"]{display:none!important;}
+
+
+/* Harita il seçimi sonrası çıkan "X seçildi" bildirimini gösterme */
+#selectedCity,
+#selectedCityToast,
+#citySelected,
+#citySelectionToast,
+#mapSelectionToast,
+#selected-city-toast,
+.selected-city,
+.selected-city-toast,
+.map-selection-toast,
+.il-selected-toast,
+.map-selected-city {
+  display: none !important;
+}
+
+/* Haritada seçilen ilin rengi: koyu mavi ton */
+:root {
+  --map-selected: #14265E;
+  --map-selected-stroke: #0C1A44;
+}
+[data-theme="dark"] {
+  --map-selected: #2E4A99;
+  --map-selected-stroke: #1F3575;
+}
+
 </style>
 </head>
 <body>
@@ -995,6 +1050,7 @@
     <div class="masthead-right" id="poolInfo">Havuz yükleniyor…</div>
   </div>
   <div class="rule-sub">Puanınızı girin, sıralamanızı görün, 40 okul seçin — diğer katılımcıların tercihleriyle birlikte olası yerleşiminizi tahmin edin.</div>
+  <button type="button" class="archive-link-btn" id="openArchiveBtn">📚 Geçmiş Yıllarda Açılan Okullar</button>
 
   <div class="stepper" id="stepper"></div>
 
@@ -1038,13 +1094,7 @@
   <div class="panel" id="panel-1">
     <div class="card">
       <h2 class="section-title">2 · Okul tercihlerinizi oluşturun</h2>
-      <p class="section-desc">Havuzda yıllara göre İngilizce boş kadro listeleri hazır yüklü. Aşağıdan yılı seçin, arama yapıp en fazla 40 tercih ekleyin ve sırasını düzenleyin — herkes aynı havuzu kullanır.</p>
-
-      <div class="year-toggle">
-        <button type="button" id="yearToggle2024" class="active">2024 KPSS</button>
-        <button type="button" id="yearToggle2023">2023 KPSS</button>
-         <button type="button" id="yearToggle2022">2022 KPSS</button>
-      </div>
+      <p class="section-desc">Havuzda İngilizce boş kadro listesi hazır yüklü. Arama yapıp en fazla 40 tercih ekleyin ve sırasını düzenleyin — herkes aynı havuzu kullanır. Geçmiş yıllarda hangi okullarda kadro açıldığını görmek isterseniz sayfa başındaki <b>"Geçmiş Yıllarda Açılan Okullar"</b> bağlantısını kullanabilirsiniz; o listedeki okullar yalnızca bilgi amaçlıdır ve tercih listenize eklenemez.</p>
 
       <div class="school-filter-row">
         <select class="filter-select" id="ilSelect">
@@ -1068,7 +1118,7 @@
         <div class="tr-map-svg-wrap" id="trMapSvgWrap">
           <div class="map-il-tooltip" id="mapIlTooltip"></div>
         </div>
-        <div class="map-hint">Mavi iller tıklanabilir · gri illerde bu yıl açık kadro bulunmuyor</div>
+        <div class="map-hint">İlin üzerine gelerek o ildeki toplam kontenjanı görebilirsiniz · gri illerde kontenjan yok</div>
       </div>
       <input type="text" class="school-search" id="schoolSearch" placeholder="Okul, ilçe/il veya branş ara…">
       <div class="school-list" id="schoolList"></div>
@@ -1128,8 +1178,69 @@
   </div>
 </div>
 
+<div class="modal-overlay" id="archiveOverlay">
+  <div class="modal-box archive-box">
+    <div class="archive-box-head">
+      <h3 class="modal-title" style="margin:0;">Geçmiş Yıllarda Açılan Okullar</h3>
+      <button class="icon-btn" id="closeArchiveBtn" title="Kapat">✕</button>
+    </div>
+    <div class="archive-body" id="archiveBody">
+      <p class="section-desc" style="margin-top:8px;">Bu liste, geçmiş KPSS dönemlerinde İngilizce branşında boş kadro açan okulları gösterir ve yalnızca bilgi/referans amaçlıdır. Bu site, <b>2027 Mart</b> ayında <b>Milli Eğitim Akademisi</b> puanıyla yapılacak atama için kullanılacağından, aşağıdaki geçmiş yıl okulları tercih listenize eklenemez.</p>
+      <div class="year-toggle" id="archiveYearToggle">
+        <button type="button" data-yil="2024" class="active">2024 KPSS</button>
+        <button type="button" data-yil="2023">2023 KPSS</button>
+        <button type="button" data-yil="2022">2022 KPSS</button>
+      </div>
+      <div class="archive-year-info" id="archiveYearInfo"></div>
+      <div class="school-filter-row">
+        <select class="filter-select" id="archiveIlSelect"><option value="">Tüm İller</option></select>
+        <select class="filter-select" id="archiveIlceSelect" disabled><option value="">Tüm İlçeler</option></select>
+      </div>
+      <div class="map-toggle-row">
+        <button type="button" class="map-toggle-btn" id="archiveMapToggleBtn">🗺️ Haritadan Seç <span class="chevron">▾</span></button>
+      </div>
+      <div class="map-panel" id="archiveMapPanel">
+        <div class="map-panel-head">
+          <div class="map-panel-title">İl seçmek için haritaya tıklayın</div>
+          <div class="map-legend">
+            <span><i class="on"></i> Kadro açılmıştı</span>
+            <span><i class="off"></i> Kadro açılmamıştı</span>
+          </div>
+        </div>
+        <div class="tr-map-svg-wrap" id="archiveMapSvgWrap">
+          <div class="map-il-tooltip" id="archiveMapIlTooltip"></div>
+        </div>
+        <div class="map-hint">İlin üzerine gelerek o ildeki toplam kontenjanı görebilirsiniz · gri illerde kadro açılmamıştı</div>
+      </div>
+      <input type="text" class="school-search" id="archiveSearch" placeholder="Okul, ilçe/il veya branş ara…">
+      <div class="school-list archive-list" id="archiveSchoolList"></div>
+    </div>
+  </div>
+</div>
+
+
 <script>
 (function(){
+
+  // Harita il seçimi sonrası çıkan "X seçildi" kutusunu tamamen devre dışı bırak.
+  const selectionNoticeSelectors = [
+    '#selectedCity', '#selectedCityToast', '#citySelected',
+    '#citySelectionToast', '#mapSelectionToast', '#selected-city-toast',
+    '.selected-city', '.selected-city-toast', '.map-selection-toast',
+    '.il-selected-toast', '.map-selected-city'
+  ];
+  function hideMapSelectionNotices(){
+    selectionNoticeSelectors.forEach(sel => {
+      document.querySelectorAll(sel).forEach(el => {
+        el.style.setProperty('display','none','important');
+      });
+    });
+  }
+  hideMapSelectionNotices();
+  new MutationObserver(hideMapSelectionNotices).observe(document.body, {
+    childList: true, subtree: true
+  });
+
   // ---------- SUPABASE CONFIG ----------
   // Kendi Supabase projenizin bilgilerini buraya girin.
   // Project Settings -> API üzerinden alabilirsiniz.
@@ -1335,8 +1446,8 @@ En önemlisi, puan verilerimizi lütfen doğru girelim.`);
     el.innerHTML = '';
     STEP_LABELS.forEach((s, i)=>{
       const d = document.createElement('div');
-      d.className = 'step-tab' + (i===state.step ? ' active':'') + (i < state.step ? ' done':'') + (i > state.maxStepUnlocked ? ' locked':'');
-      d.innerHTML = `<div class="num">${s.n}</div><div class="label">${s.l}</div>`;
+      d.className = 'step-node' + (i===state.step ? ' active':'') + (i < state.step ? ' done':'') + (i > state.maxStepUnlocked ? ' locked':'');
+      d.innerHTML = `<div class="step-circle"><span class="step-num">${s.n}</span><span class="step-check">✓</span></div><div class="step-label">${s.l}</div>`;
       d.onclick = ()=>{ if (i <= state.maxStepUnlocked) goStep(i); };
       el.appendChild(d);
     });
@@ -1365,8 +1476,9 @@ En önemlisi, puan verilerimizi lütfen doğru girelim.`);
 
   async function refreshSimCounter(){
     const all = await getAllParticipants();
-    const totalQuota = state.schools.reduce((a,s)=>a+(Number(s.quota)||0),0);
-    $('simCounter').innerHTML = `<span class="dot"></span> ${all.length} katılımcı · ${state.schools.length} okul · toplam ${totalQuota} kontenjan havuzda`;
+    const currentYearSchools = state.schools.filter(s => Number(s.yil || 2024) === state.schoolYearFilter);
+    const totalQuota = currentYearSchools.reduce((a,s)=>a+(Number(s.quota)||0),0);
+    $('simCounter').innerHTML = `<span class="dot"></span> ${all.length} katılımcı · ${currentYearSchools.length} okul · toplam ${totalQuota} kontenjan havuzda`;
   }
 
   // ---------- STEP 1: SCORE / RANK ----------
@@ -1488,7 +1600,13 @@ En önemlisi, puan verilerimizi lütfen doğru girelim.`);
         tooltip.style.display = 'block';
         tooltip.style.left = (e.clientX - wrapRect.left) + 'px';
         tooltip.style.top = (e.clientY - wrapRect.top) + 'px';
-        tooltip.textContent = p.getAttribute('data-il');
+        const ilName = p.getAttribute('data-il');
+        const matchedIl = resolveIlName(ilName, getIlList());
+        const ilQuota = matchedIl ? getIlQuota(matchedIl) : 0;
+        tooltip.classList.toggle('has-quota', !!matchedIl);
+        tooltip.innerHTML = matchedIl
+          ? `<strong>${escapeHtml(matchedIl)}</strong><span class="map-tooltip-quota">${ilQuota} kontenjan</span>`
+          : `<strong>${escapeHtml(ilName)}</strong><span class="map-tooltip-quota">Kontenjan yok</span>`;
       });
       p.addEventListener('mouseleave', ()=>{ tooltip.style.display = 'none'; });
       p.addEventListener('click', ()=>{
@@ -1499,7 +1617,6 @@ En önemlisi, puan verilerimizi lütfen doğru girelim.`);
         renderIlceSelect(matched);
         renderSchoolList($('schoolSearch').value);
         updateMapSelection();
-        toast(`${matched} seçildi`);
       });
     });
   }
@@ -1552,6 +1669,13 @@ En önemlisi, puan verilerimizi lütfen doğru girelim.`);
       if (c.il === il && c.ilce) set.add(c.ilce);
     });
     return Array.from(set).sort((a, b) => a.localeCompare(b, 'tr'));
+  }
+
+  function getIlQuota(il){
+    return schoolsInSelectedYear().reduce((sum, s)=>{
+      const c = splitCity(s.city);
+      return c.il === il ? sum + (Number(s.quota) || 0) : sum;
+    }, 0);
   }
 
   function renderIlSelect(){
@@ -1611,22 +1735,6 @@ En önemlisi, puan verilerimizi lütfen doğru girelim.`);
   }
   function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
-  function setSchoolYearFilter(yil){
-    if (state.schoolYearFilter === yil) return;
-    state.schoolYearFilter = yil;
-    $('yearToggle2024').classList.toggle('active', yil === 2024);
-    $('yearToggle2023').classList.toggle('active', yil === 2023);
-    $('yearToggle2022').classList.toggle('active', yil === 2022);
-    $('ilSelect').value = '';
-    renderIlSelect();
-    renderIlceSelect('');
-    renderSchoolList($('schoolSearch').value);
-    updateMapSelection();
-  }
-  $('yearToggle2024').addEventListener('click', ()=> setSchoolYearFilter(2024));
-  $('yearToggle2023').addEventListener('click', ()=> setSchoolYearFilter(2023));
-  $('yearToggle2022').addEventListener('click', ()=> setSchoolYearFilter(2022));
-
   $('schoolSearch').addEventListener('input', (e)=> renderSchoolList(e.target.value));
 
   $('ilSelect').addEventListener('change', (e)=>{
@@ -1635,6 +1743,188 @@ En önemlisi, puan verilerimizi lütfen doğru girelim.`);
     updateMapSelection();
   });
   $('ilceSelect').addEventListener('change', ()=> renderSchoolList($('schoolSearch').value));
+
+  // ---------- ARŞİV: Geçmiş Yıllarda Açılan Okullar (yalnızca bilgi amaçlı, tercih edilemez) ----------
+  let archiveYear = 2024;
+
+  function archiveSchoolsInYear(yil){
+    return state.schools.filter(s => Number(s.yil || 2024) === yil);
+  }
+  function getArchiveIlList(yil){
+    const set = new Set();
+    archiveSchoolsInYear(yil).forEach(s => { const { il } = splitCity(s.city); if (il) set.add(il); });
+    return Array.from(set).sort((a, b) => a.localeCompare(b, 'tr'));
+  }
+  function getArchiveIlceList(yil, il){
+    const set = new Set();
+    archiveSchoolsInYear(yil).forEach(s => {
+      const c = splitCity(s.city);
+      if (c.il === il && c.ilce) set.add(c.ilce);
+    });
+    return Array.from(set).sort((a, b) => a.localeCompare(b, 'tr'));
+  }
+  function renderArchiveIlSelect(){
+    const el = $('archiveIlSelect');
+    const current = el.value;
+    const ils = getArchiveIlList(archiveYear);
+    el.innerHTML = '<option value="">Tüm İller</option>' + ils.map(il => `<option value="${escapeHtml(il)}">${escapeHtml(il)}</option>`).join('');
+    if (ils.includes(current)) el.value = current;
+  }
+  function renderArchiveIlceSelect(il){
+    const el = $('archiveIlceSelect');
+    if (!il){ el.innerHTML = '<option value="">Tüm İlçeler</option>'; el.disabled = true; return; }
+    el.disabled = false;
+    const ilceler = getArchiveIlceList(archiveYear, il);
+    el.innerHTML = '<option value="">Tüm İlçeler</option>' + ilceler.map(i => `<option value="${escapeHtml(i)}">${escapeHtml(i)}</option>`).join('');
+  }
+  function renderArchiveSchoolList(filter){
+    const el = $('archiveSchoolList');
+    const f = (filter||'').toLocaleLowerCase('tr-TR');
+    const selectedIl = $('archiveIlSelect').value;
+    const selectedIlce = $('archiveIlceSelect').value;
+    const list = archiveSchoolsInYear(archiveYear).filter(s=>{
+      if (selectedIl){
+        const c = splitCity(s.city);
+        if (c.il !== selectedIl) return false;
+        if (selectedIlce && c.ilce !== selectedIlce) return false;
+      }
+      if (!f) return true;
+      return (s.name+' '+s.city+' '+s.branch).toLocaleLowerCase('tr-TR').includes(f);
+    });
+    if (list.length === 0){
+      el.innerHTML = `<div class="empty-note">${archiveYear} yılına ait okul verisi henüz eklenmedi.</div>`;
+      return;
+    }
+    el.innerHTML = list.map(s=>`
+      <div class="school-row archive-row">
+        <div>
+          <div class="school-main">${escapeHtml(s.name)}</div>
+          <div class="school-meta">${escapeHtml(s.city)} · ${escapeHtml(s.branch)}${s.hizmet ? ' · Hizmet Bölgesi/Alanı: '+escapeHtml(s.hizmet) : ''}${s.kod ? ' · Kod: '+escapeHtml(s.kod) : ''}</div>
+        </div>
+        <span class="quota-pill">Kontenjan ${s.quota}</span>
+      </div>`).join('');
+  }
+  function getArchiveIlQuota(yil, il){
+    return archiveSchoolsInYear(yil).reduce((sum, s)=>{
+      const c = splitCity(s.city);
+      return c.il === il ? sum + (Number(s.quota) || 0) : sum;
+    }, 0);
+  }
+
+  let archiveMapBuilt = false;
+  function buildArchiveMapSvg(){
+    if (archiveMapBuilt) return;
+    archiveMapBuilt = true;
+    const wrap = $('archiveMapSvgWrap');
+    const svgHolder = document.createElement('div');
+    const parts = ['<svg viewBox="0 20 1030 465" xmlns="http://www.w3.org/2000/svg">'];
+    Object.keys(TURKEY_MAP_PATHS).forEach(code=>{
+      const name = TURKEY_MAP_NAMES[code];
+      parts.push(`<path data-code="${code}" data-il="${escapeHtml(name)}" d="${TURKEY_MAP_PATHS[code]}"></path>`);
+    });
+    parts.push('</svg>');
+    svgHolder.innerHTML = parts.join('');
+    wrap.insertBefore(svgHolder.firstChild, wrap.firstChild);
+    const tooltip = $('archiveMapIlTooltip');
+    wrap.querySelectorAll('path').forEach(p=>{
+      p.addEventListener('mousemove', (e)=>{
+        const wrapRect = wrap.getBoundingClientRect();
+        tooltip.style.display = 'block';
+        tooltip.style.left = (e.clientX - wrapRect.left) + 'px';
+        tooltip.style.top = (e.clientY - wrapRect.top) + 'px';
+        const ilName = p.getAttribute('data-il');
+        const matchedIl = resolveIlName(ilName, getArchiveIlList(archiveYear));
+        const ilQuota = matchedIl ? getArchiveIlQuota(archiveYear, matchedIl) : 0;
+        tooltip.classList.toggle('has-quota', !!matchedIl);
+        tooltip.innerHTML = matchedIl
+          ? `<strong>${escapeHtml(matchedIl)}</strong><span class="map-tooltip-quota">${ilQuota} kontenjan</span>`
+          : `<strong>${escapeHtml(ilName)}</strong><span class="map-tooltip-quota">Kadro açılmamıştı</span>`;
+      });
+      p.addEventListener('mouseleave', ()=>{ tooltip.style.display = 'none'; });
+      p.addEventListener('click', ()=>{
+        if (!p.classList.contains('il-active')) return;
+        const matched = resolveIlName(p.getAttribute('data-il'), getArchiveIlList(archiveYear));
+        if (!matched) return;
+        $('archiveIlSelect').value = matched;
+        renderArchiveIlceSelect(matched);
+        renderArchiveSchoolList($('archiveSearch').value);
+        updateArchiveMapSelection();
+      });
+    });
+  }
+
+  function updateArchiveMapSelection(){
+    const wrap = $('archiveMapSvgWrap');
+    if (!wrap || !wrap.firstChild) return;
+    const activeIls = getArchiveIlList(archiveYear);
+    const selected = $('archiveIlSelect').value;
+    wrap.querySelectorAll('path').forEach(p=>{
+      const matched = resolveIlName(p.getAttribute('data-il'), activeIls);
+      p.classList.toggle('il-active', !!matched);
+      p.classList.toggle('il-disabled', !matched);
+      p.classList.toggle('il-selected', !!matched && matched === selected);
+    });
+  }
+
+  function toggleArchiveMapPanel(){
+    const panel = $('archiveMapPanel');
+    const btn = $('archiveMapToggleBtn');
+    const opening = !panel.classList.contains('open');
+    panel.classList.toggle('open', opening);
+    btn.classList.toggle('active', opening);
+    if (opening){
+      buildArchiveMapSvg();
+      updateArchiveMapSelection();
+    }
+  }
+  $('archiveMapToggleBtn').addEventListener('click', toggleArchiveMapPanel);
+
+  function updateArchiveYearInfo(){
+    const list = archiveSchoolsInYear(archiveYear);
+    const totalQuota = list.reduce((a,s)=>a+(Number(s.quota)||0),0);
+    const el = $('archiveYearInfo');
+    if (!el) return;
+    el.textContent = list.length
+      ? `${archiveYear} KPSS: ${list.length} okul - ${totalQuota} kontenjan`
+      : `${archiveYear} yılına ait okul verisi henüz eklenmedi.`;
+  }
+  function setArchiveYear(yil){
+    archiveYear = yil;
+    document.querySelectorAll('#archiveYearToggle button').forEach(b=>{
+      b.classList.toggle('active', Number(b.getAttribute('data-yil')) === yil);
+    });
+    $('archiveIlSelect').value = '';
+    renderArchiveIlSelect();
+    renderArchiveIlceSelect('');
+    renderArchiveSchoolList($('archiveSearch').value);
+    updateArchiveMapSelection();
+    updateArchiveYearInfo();
+  }
+  function openArchive(){
+    renderArchiveIlSelect();
+    renderArchiveIlceSelect('');
+    $('archiveSearch').value = '';
+    renderArchiveSchoolList('');
+    updateArchiveMapSelection();
+    updateArchiveYearInfo();
+    $('archiveOverlay').classList.add('show');
+  }
+  function closeArchive(){
+    $('archiveOverlay').classList.remove('show');
+  }
+  $('openArchiveBtn').addEventListener('click', openArchive);
+  $('closeArchiveBtn').addEventListener('click', closeArchive);
+  $('archiveOverlay').addEventListener('click', (e)=>{ if (e.target.id === 'archiveOverlay') closeArchive(); });
+  document.querySelectorAll('#archiveYearToggle button').forEach(b=>{
+    b.addEventListener('click', ()=> setArchiveYear(Number(b.getAttribute('data-yil'))));
+  });
+  $('archiveSearch').addEventListener('input', (e)=> renderArchiveSchoolList(e.target.value));
+  $('archiveIlSelect').addEventListener('change', (e)=>{
+    renderArchiveIlceSelect(e.target.value);
+    renderArchiveSchoolList($('archiveSearch').value);
+    updateArchiveMapSelection();
+  });
+  $('archiveIlceSelect').addEventListener('change', ()=> renderArchiveSchoolList($('archiveSearch').value));
 
   function addPref(schoolId){
     if (state.myPrefs.includes(schoolId)) return;
@@ -1849,7 +2139,7 @@ En önemlisi, puan verilerimizi lütfen doğru girelim.`);
       const isMe = r.id === state.profileId;
       return `<tr class="${isMe?'me':''}">
         <td>${r.rank}</td>
-        <td>${escapeHtml(r.name)}${isMe?' <span style="color:var(--accent-blue);">(siz)</span>':''}</td>
+        <td>${escapeHtml(r.name)}${isMe?' <span style="color:var(--ink-soft);">(siz)</span>':''}</td>
         <td>${fmtScore(r.score)}</td>
         <td>${school ? `<span class="placed">${escapeHtml(school.name)}<span class="placed-city">${escapeHtml(school.city)}</span></span>` : '<span class="unplaced">Yerleşemedi</span>'}</td>
         <td>${r.prefRank ?? '-'}</td>
